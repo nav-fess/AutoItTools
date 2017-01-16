@@ -1,6 +1,7 @@
 #include <Array.au3>
 #include <File.au3>
 #include <GUIConstants.au3>
+#include <ButtonConstants.au3>
 
 $Path_to_x2t = ""&@ScriptDir&"\x2t.exe" ;$Pach_to_x2t like a c:\autotests\x2t.exe
 $Path_to_file_input = ""&@ScriptDir&"\files" ;Folder with files without last backslash
@@ -51,8 +52,6 @@ EndFunc
 
 Func ConvertAll($Progressbar)
 
-if CheckDLL() Then
-
 ;#comments-start
    ClearResultDir()
 
@@ -74,7 +73,6 @@ if CheckDLL() Then
 
    GetFileDiff()
 
-EndIf
 
 EndFunc
 
@@ -179,6 +177,7 @@ Func Example()
     $StartButton = GUICtrlCreateButton("Start", 50, 500, 300, 75)
 	$hCombo = GUICtrlCreateCombo("", 100, 120, 200, 30)
     GUICtrlSetData($hCombo, "docx|rtf|txt|xls|xlsx|pptx|odt|ods|odp|doct", "docx")
+	$hCheckbox = GUICtrlCreateCheckbox("convert in oot",180,180)
 	Local $idProgressbar = GUICtrlCreateProgress(20, 200, 360, 20, $PBS_SMOOTH)
     $Label = GUICtrlCreateLabel("Complite!", 170, 220, 80) ; first cell 70 width
 	GUICtrlSetState($Label, $GUI_HIDE)
@@ -197,6 +196,9 @@ Func Example()
 				GUICtrlSetState($Label, $GUI_SHOW)
 				ConsoleWrite("Convert all" & @LF)
 			 Case $hCombo
+			    if Not CheckDLL() Then
+				  Exit
+				EndIf
 				$Format_to =  GUICtrlRead($hCombo)
 				ConsoleWrite("Format change " & $Format_to & "" & @LF)
         EndSwitch
