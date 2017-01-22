@@ -1,14 +1,22 @@
+;сделать через группы
 #include <Array.au3>
 #include <File.au3>
 #include <GUIConstants.au3>
 #include <ButtonConstants.au3>
+#include <GuiListView.au3>
+
+
 
 $Path_to_x2t = ""&@ScriptDir&"\x2t.exe" ;$Pach_to_x2t like a c:\autotests\x2t.exe
 $Path_to_file_input = ""&@ScriptDir&"\files" ;Folder with files without last backslash
 $Path_to_file_output = ""&@ScriptDir&"\result" ;Empty folder for file result without last backslash. Wil be clear before start convertion
 $Path_to_fonts = ""&@WindowsDir&"\Fonts" ; Folder with fonts
 $Path_to_dll = ""&@ScriptDir&"\libs" ;Folder with files without last backslash
+
+Local $CheckFormat=[]
+
 ;----------------------------------------------------------------------------------------------------------
+
 
 $Format_to = "docx"
 $NumberOfFile = 0
@@ -110,7 +118,7 @@ EndFunc
 Func GetFileDiff()
 
    ConsoleWrite("TIME GetFileList($Path_to_file_input" & @CRLF )
-   Sleep(15000)
+   ;Sleep(15000)
 
    $AllFilesInput = GetFileList($Path_to_file_input)
    $AllFilesOutput = GetFileList($Path_to_file_output)
@@ -175,12 +183,24 @@ Func Example()
 	GUICtrlCreateLabel ("Path to fonts  "&$Path_to_fonts&"", 20, 90)
 	GUICtrlCreateLabel ("Convert to", 20, 124)
     $StartButton = GUICtrlCreateButton("Start", 50, 500, 300, 75)
-	$hCombo = GUICtrlCreateCombo("", 100, 120, 200, 30)
-    GUICtrlSetData($hCombo, "docx|rtf|txt|xls|xlsx|pptx|odt|ods|odp|doct", "docx")
-	$hCheckbox = GUICtrlCreateCheckbox("convert in oot",180,180)
-	Local $idProgressbar = GUICtrlCreateProgress(20, 200, 360, 20, $PBS_SMOOTH)
+	;$hCombo = GUICtrlCreateCombo("", 100, 120, 150, 30)
+    ;GUICtrlSetData($hCombo, "docx|rtf|txt|xls|xlsx|pptx|odt|ods|odp|doct", "docx")
+	Local $idProgressbar = GUICtrlCreateProgress(20, 350, 360, 20, $PBS_SMOOTH)
     $Label = GUICtrlCreateLabel("Complite!", 170, 220, 80) ; first cell 70 width
 	GUICtrlSetState($Label, $GUI_HIDE)
+
+	$hListView = GUICtrlCreateListView("Коечные форматы", 100, 120, 150, 200,-1, $LVS_EX_CHECKBOXES)
+    $item1 =  GUICtrlCreateListViewItem("docx", $hListView)
+    $item2 =  GUICtrlCreateListViewItem("rtf",  $hListView)
+    $item3 =  GUICtrlCreateListViewItem("txt",  $hListView)
+    $item4 =  GUICtrlCreateListViewItem("xls",  $hListView)
+    $item5 =  GUICtrlCreateListViewItem("xlsx", $hListView)
+    $item6 =  GUICtrlCreateListViewItem("pptx", $hListView)
+    $item7 =  GUICtrlCreateListViewItem("odt",  $hListView)
+	$item8 =  GUICtrlCreateListViewItem("ods",  $hListView)
+	$item9 =  GUICtrlCreateListViewItem("odp",  $hListView)
+	$item10 = GUICtrlCreateListViewItem("doct", $hListView)
+
     ; Display the GUI.
     GUISetState(@SW_SHOW, $hGUI)
     Local $iPID = 0
@@ -195,14 +215,20 @@ Func Example()
 				$iPID = ConvertAll($idProgressbar)
 				GUICtrlSetState($Label, $GUI_SHOW)
 				ConsoleWrite("Convert all" & @LF)
-			 Case $hCombo
-			    if Not CheckDLL() Then
-				  Exit
-				EndIf
-				$Format_to =  GUICtrlRead($hCombo)
-				ConsoleWrite("Format change " & $Format_to & "" & @LF)
+			 Case $hListView
+;~ 			    if Not CheckDLL() Then
+;~ 				  Exit
+;~ 				EndIf
+			   For $item=0 to _GUICtrlListView_GetItemCount($hListView)-1
+				  if _GUICtrlListView_GetItemChecked($hListView, $item) Then
+					  _ArrayAdd($CheckFormat,_GUICtrlListView_GetItemText($hListView,$item))
+					 EndIf
+			   Next
+				  _ArrayDelete($CheckFormat,0)
+
         EndSwitch
     WEnd
     GUIDelete($hGUI)
     If $iPID Then ProcessClose($iPID)
 EndFunc
+#comments-end
