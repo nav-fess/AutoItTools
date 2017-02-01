@@ -30,19 +30,21 @@ Func ConvertFile($filename, $format_to)
 EndFunc
 
 
-Func GetFileDiff()
+Func GetFileDiff($Folder_input, $Folder_output, $Rezult_format)
 
-   $AllFilesInput = GetFileList($Path_to_file_input)
-   $AllFilesOutput = GetFileList($Path_to_file_output)
+   $AllFilesInput = GetFileList($Path_to_file_input & $Folder_input)
+   $AllFilesOutput = GetFileList($Path_to_file_output & $Folder_output)
 
    $aNumberDeleteFile=_ArraySearch($AllFilesOutput,'notconverted')
-   _ArrayDelete($AllFilesOutput,$aNumberDeleteFile)
+		 if( $aNumberDeleteFile <> -1) Then
+			_ArrayDelete($AllFilesOutput,$aNumberDeleteFile)
+		 EndIf
 
    Local $Result = []
    _ArrayDelete($Result,0)
 
    For $element In $AllFilesInput
-	  $str = $element & '.' & $Format_to
+	  $str = $element & '.' & $Rezult_format
 
 	  If _ArraySearch($AllFilesOutput, $str) == -1 Then
 		 _ArrayAdd($Result, $element)
@@ -50,7 +52,7 @@ Func GetFileDiff()
 
    Next
     _ArrayDisplay($Result)
-    CopyFiles($Result)
+    CopyFiles($Folder_input, $Folder_output, $Result)
 
 EndFunc
 
@@ -108,7 +110,7 @@ Func ConvertAll($FolderIn, $FolderOut, $Progressbar)
 	  Next
 	  GUICtrlSetData($Progressbar, 0)
 
-   ;GetFileDiff() ДОДЕЛАТЬ
+   GetFileDiff($FolderIn, $FolderIn & ' to ' & $FolderOut, $FolderOut)
 
 EndFunc
 
@@ -138,13 +140,13 @@ Func CheckDLL()
 EndFunc
 
 
-Func CopyFiles($List)
+Func CopyFiles($Folder_input,$Folder_output,$List)
 
    ConsoleWrite("CopyFiles" & @CRLF)
 
    For $element In $List
 	  if $element <> '' Then
-		  FileCopy(""&$Path_to_file_input&"\"&$element&"", ""&$Path_to_file_output&"\notconverted")
+		  FileCopy(""&$Path_to_file_input& "\" &$Folder_input& "\" &$element&"", ""&$Path_to_file_output&"\"&$Folder_input&"\notconverted")
 	  EndIf
    Next
 
